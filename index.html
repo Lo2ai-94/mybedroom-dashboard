@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>mybedroom.travel — داشبورد الريلز</title>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0b0c0f;--s1:#13141a;--s2:#1a1b23;--s3:#22232e;
+  --b1:rgba(255,255,255,.07);--b2:rgba(255,255,255,.13);
+  --t1:#edecea;--t2:#9a9895;--t3:#57554f;
+  --gold:#d4a843;--gd:rgba(212,168,67,.13);--gb:rgba(212,168,67,.3);
+  --grn:#2ecc8a;--gn:rgba(46,204,138,.12);--gnb:rgba(46,204,138,.3);
+  --red:#e85555;--rd:rgba(232,85,85,.12);--rb:rgba(232,85,85,.3);
+  --yel:#e8b84a;--yd:rgba(232,184,74,.13);
+  --blu:#4a9de8;--r:12px;
+}
+body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;font-size:14px;line-height:1.6}
+
+/* HEADER */
+.hdr{padding:14px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;border-bottom:1px solid var(--b1)}
+.brand{display:flex;align-items:center;gap:11px}
+.bico{width:40px;height:40px;border-radius:9px;background:var(--gd);border:1px solid var(--gb);display:flex;align-items:center;justify-content:center;font-size:18px}
+.bname{font-size:16px;font-weight:700}.bsub{font-size:11px;color:var(--t2)}
+.hdr-r{display:flex;align-items:center;gap:10px}
+.live{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--grn)}
+.ldot{width:7px;height:7px;border-radius:50%;background:var(--grn);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.stamp{font-size:11px;color:var(--t3)}.stamp b{color:var(--gold)}
+.rbtn{display:flex;align-items:center;gap:5px;padding:6px 14px;background:var(--gd);border:1px solid var(--gb);border-radius:8px;color:var(--gold);font-size:12px;font-family:'Cairo',sans-serif;font-weight:600;cursor:pointer;transition:background .18s}
+.rbtn:hover:not(:disabled){background:rgba(212,168,67,.22)}.rbtn:disabled{opacity:.45;cursor:not-allowed}
+#sico{display:inline-block}
+
+/* LOADER */
+#loader{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:70px 20px;gap:14px}
+.ldring{width:36px;height:36px;border:3px solid var(--b2);border-top-color:var(--gold);border-radius:50%;animation:spin .75s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ldtxt{font-size:13px;color:var(--t2)}.ldstep{font-size:11px;color:var(--t3);margin-top:2px}
+
+/* ERROR */
+#errBox{display:none;margin:16px 22px;background:var(--rd);border:1px solid var(--rb);border-radius:var(--r);padding:16px 18px;font-size:13px;color:var(--red)}
+#errBox b{display:block;font-size:14px;margin-bottom:6px}
+
+/* CONTENT */
+#content{display:none}
+
+/* TABS */
+.tabs{display:flex;gap:0;padding:0 22px;border-bottom:1px solid var(--b1);overflow-x:auto}
+.tab{padding:11px 16px;font-size:12px;font-weight:700;font-family:'Cairo',sans-serif;border:none;background:transparent;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;transition:all .18s;white-space:nowrap;position:relative;bottom:-1px}
+.tab:hover{color:var(--t2)}.tab.on{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* PANES */
+.pane{display:none;padding:18px 22px 48px;animation:fi .2s}
+.pane.on{display:block}
+@keyframes fi{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+/* SECTION */
+.sh{font-size:10px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--t3);margin:0 0 11px;display:flex;align-items:center;gap:8px}
+.sh::after{content:'';flex:1;height:1px;background:var(--b1)}
+.mb{margin-bottom:20px}.mt{margin-top:20px}
+
+/* KPI */
+.kg{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px;margin-bottom:22px}
+.kpi{background:var(--s1);border:1px solid var(--b1);border-right-width:3px;border-radius:var(--r);padding:13px 15px}
+.kpi.cg{border-right-color:var(--gold)}.kpi.cn{border-right-color:var(--grn)}
+.kpi.cr{border-right-color:var(--red)}.kpi.cb{border-right-color:var(--blu)}.kpi.cy{border-right-color:var(--yel)}
+.kl{font-size:10px;font-weight:600;color:var(--t2);margin-bottom:5px;letter-spacing:.3px}
+.kv{font-size:22px;font-weight:900;letter-spacing:-1px}
+.vg{color:var(--gold)}.vn{color:var(--grn)}.vr{color:var(--red)}.vb{color:var(--blu)}.vy{color:var(--yel)}
+.ks{font-size:10px;color:var(--t3);margin-top:3px;line-height:1.45}
+
+/* TABLE */
+.tw{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);overflow:hidden}
+.ts{max-height:460px;overflow-y:auto}
+.ts::-webkit-scrollbar{width:4px}.ts::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+table{width:100%;border-collapse:collapse}
+thead th{background:var(--s2);padding:9px 10px;font-size:10px;font-weight:700;letter-spacing:.4px;text-transform:uppercase;color:var(--t3);text-align:right;border-bottom:1px solid var(--b1);white-space:nowrap;position:sticky;top:0;z-index:2}
+tbody tr{border-bottom:1px solid rgba(255,255,255,.035);transition:background .1s}
+tbody tr:hover{background:var(--s2)}td{padding:9px 10px;font-size:12px;vertical-align:middle}
+.rk{color:var(--t3);font-size:10px;font-weight:700;width:26px}
+.tt{max-width:200px}.ttx{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--t1);text-decoration:none}.ttx:hover{color:var(--gold)}
+.dt{color:var(--t3);font-size:11px;white-space:nowrap}.tn{text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+tr.ps td:first-child{border-right:3px solid var(--grn)}.ps{background:rgba(46,204,138,.04)}
+tr.pa td:first-child{border-right:3px solid var(--yel)}
+tr.pw td:first-child{border-right:3px solid var(--red)}.pw{background:rgba(232,85,85,.04)}
+.pl{display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;font-weight:700}
+.pls{background:var(--gn);color:var(--grn)}.pla{background:var(--yd);color:var(--yel)}.plw{background:var(--rd);color:var(--red)}
+
+/* CAT */
+.cr2{display:grid;grid-template-columns:repeat(auto-fit,minmax(195px,1fr));gap:11px;margin-bottom:20px}
+.cc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden}
+.cc::after{content:'';position:absolute;top:0;right:0;width:4px;height:100%;border-radius:0 var(--r) var(--r) 0}
+.ccs::after{background:var(--grn)}.cca::after{background:var(--yel)}.ccw::after{background:var(--red)}
+.ci{font-size:20px;margin-bottom:6px}.ct2{font-size:14px;font-weight:700;margin-bottom:3px}.cc2{font-size:11px;color:var(--t2);margin-bottom:9px}
+.cr3{display:flex;justify-content:space-between;font-size:11px;color:var(--t3);padding:4px 0;border-bottom:1px solid var(--b1)}
+.cr3:last-child{border:none}.cr3 b{color:var(--t1);font-weight:600}
+
+/* PATTERN */
+.pb{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+.pt{font-size:12px;font-weight:700;margin-bottom:9px}
+.pi{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid var(--b1);font-size:12px;color:var(--t2);line-height:1.6}
+.pi:last-child{border:none}.pic{flex-shrink:0;width:24px;height:24px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:11px}
+.pig{background:var(--gn)}.pir{background:var(--rd)}.pi b{color:var(--t1)}
+
+/* CHARTS */
+.cc3{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:15px 17px;margin-bottom:13px}
+.c2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:13px}
+.ct3{font-size:12px;font-weight:700;margin-bottom:11px}
+
+/* RECS */
+.rg{display:grid;grid-template-columns:repeat(auto-fit,minmax(235px,1fr));gap:10px;margin-bottom:18px}
+.rc{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:14px 16px;position:relative;overflow:hidden;transition:border-color .18s}
+.rc:hover{border-color:var(--b2)}.rc::after{content:'';position:absolute;top:0;right:0;width:4px;height:100%;border-radius:0 var(--r) var(--r) 0}
+.rh{background:var(--rd);border-color:var(--rb)}.rh::after{background:var(--red)}.rm::after{background:var(--yel)}.rl::after{background:var(--grn)}
+.rp{font-size:10px;font-weight:700;letter-spacing:.5px;padding:2px 7px;border-radius:7px;margin-bottom:7px;display:inline-block}
+.rph{background:var(--rd);color:var(--red)}.rpm{background:var(--yd);color:var(--yel)}.rpl{background:var(--gn);color:var(--grn)}
+.rt{font-size:13px;font-weight:700;margin-bottom:5px}.rb{font-size:11px;color:var(--t2);line-height:1.7;margin-bottom:7px}
+.ri{font-size:11px;font-weight:700;padding:3px 9px;border-radius:6px;display:inline-block}
+.rih{background:var(--rd);color:var(--red)}.rim{background:var(--yd);color:var(--yel)}.ril{background:var(--gn);color:var(--grn)}
+.re{font-size:11px;color:var(--t3);margin-top:5px;font-style:italic}
+.sb{background:var(--rd);border:1px solid var(--rb);border-radius:var(--r);padding:13px 16px}
+.st{font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px}
+.si{display:flex;align-items:flex-start;gap:6px;padding:4px 0;border-bottom:1px solid rgba(232,85,85,.12);font-size:12px;color:var(--t2)}
+.si:last-child{border:none}.sd{width:5px;height:5px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:6px}
+
+/* WEEK */
+.wg{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-bottom:16px}
+.dy{background:var(--s1);border:1px solid var(--b1);border-radius:var(--r);padding:10px 11px}
+.dy.best{border-color:var(--gb);background:rgba(212,168,67,.04)}
+.dn{font-size:11px;font-weight:700;color:var(--t2);margin-bottom:7px}.dy.best .dn{color:var(--gold)}
+.dty{font-size:11px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.dtp{font-size:10px;color:var(--t3);margin-bottom:5px;line-height:1.5}
+.dtm{font-size:10px;color:var(--gold);margin-bottom:3px}
+.dcta{font-size:9px;padding:2px 6px;border-radius:6px;background:var(--s3);color:var(--t2);display:inline-block}
+.cbx{background:var(--s1);border:1px solid var(--gb);border-radius:var(--r);padding:13px 16px;margin-bottom:9px}
+.cday{font-size:10px;color:var(--gold);font-weight:700;margin-bottom:5px}
+.ctxt{font-size:12px;color:var(--t1);line-height:1.85;white-space:pre-wrap}
+.cpbtn{margin-top:8px;padding:5px 13px;background:var(--gd);border:1px solid var(--gb);border-radius:8px;color:var(--gold);font-size:11px;font-family:'Cairo',sans-serif;cursor:pointer}
+.cpbtn:hover{background:rgba(212,168,67,.22)}
+.gb2{background:var(--gn);border:1px solid var(--gnb);border-radius:var(--r);padding:13px 16px;margin-bottom:15px}
+.gt{font-size:13px;font-weight:700;color:var(--grn);margin-bottom:5px}
+.gby{font-size:12px;color:var(--t2);line-height:1.7}
+
+@media(max-width:680px){
+  .hdr{padding:12px 14px}.tabs{padding:0 14px}.pane{padding:14px 14px 40px}
+  .c2{grid-template-columns:1fr}.wg{grid-template-columns:repeat(2,1fr)}.kg{grid-template-columns:repeat(2,1fr)}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="brand">
+    <div class="bico">🛏️</div>
+    <div><div class="bname">mybedroom.travel</div><div class="bsub">داشبورد الريلز — Live</div></div>
+  </div>
+  <div class="hdr-r">
+    <div class="live"><div class="ldot"></div>Live</div>
+    <div class="stamp">تحديث: <b id="fd">—</b></div>
+    <button class="rbtn" id="rbtn" onclick="loadData()">
+      <span id="sico">↺</span> تحديث
+    </button>
+  </div>
+</header>
+
+<div id="loader">
+  <div class="ldring"></div>
+  <div>
+    <div class="ldtxt">يتصل بـ Windsor.ai…</div>
+    <div class="ldstep" id="ldstep">يجلب آخر 30 ريل…</div>
+  </div>
+</div>
+
+<div id="errBox"></div>
+
+<div id="content">
+  <nav class="tabs">
+    <button class="tab on" onclick="go(0)">📊 الإحصائيات</button>
+    <button class="tab" onclick="go(1)">🔍 شو اشتغل</button>
+    <button class="tab" onclick="go(2)">📈 الشارتات</button>
+    <button class="tab" onclick="go(3)">💡 التوصيات</button>
+    <button class="tab" onclick="go(4)">📅 خطة الأسبوع</button>
+  </nav>
+
+  <div class="pane on" id="p0">
+    <div class="sh mb">مؤشرات الأداء الرئيسية</div>
+    <div class="kg" id="kpiGrid"></div>
+    <div class="sh mb">جدول الريلز — مرتب من الأعلى تفاعلاً</div>
+    <div class="tw"><div class="ts"><table>
+      <thead><tr><th>#</th><th>الريل</th><th>التاريخ</th><th>مشاهدات</th><th>لايكات</th><th>كومنتات</th><th>مشاركات</th><th>حفظ</th><th>تفاعل</th><th>الأداء</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table></div></div>
+  </div>
+
+  <div class="pane" id="p1">
+    <div class="sh mb">تصنيف الريلز</div>
+    <div class="cr2" id="catRow"></div>
+    <div class="sh mb">الأنماط المكتشفة</div>
+    <div class="pb" id="pgood"></div>
+    <div class="pb" id="pbad"></div>
+  </div>
+
+  <div class="pane" id="p2">
+    <div class="cc3"><div class="ct3">مشاهدات كل ريل (أخضر ناجح · أصفر عادي · أحمر ضعيف)</div><div id="barSvg"></div></div>
+    <div class="cc3"><div class="ct3">ترند التفاعل مع الوقت</div><div id="lineSvg"></div></div>
+    <div class="c2">
+      <div class="cc3"><div class="ct3">نسبة ناجح / عادي / ضعيف</div><div id="donutSvg"></div></div>
+      <div class="cc3"><div class="ct3">هيت ماب — أفضل أوقات النشر</div><div id="hmWrap"></div></div>
+    </div>
+  </div>
+
+  <div class="pane" id="p3">
+    <div class="sh mb">توصيات مرتبة بالأولوية</div>
+    <div class="rg" id="recGrid"></div>
+    <div class="sb" id="stopBox"></div>
+  </div>
+
+  <div class="pane" id="p4">
+    <div class="gb2"><div class="gt">🎯 هدف الأسبوع: مضاعفة الوصول</div><div class="gby" id="goalTxt"></div></div>
+    <div class="sh mb">جدول الأسبوع</div>
+    <div class="wg" id="wgrid"></div>
+    <div class="sh mb">كابشن جاهز — أفضل 3 أيام</div>
+    <div id="capsWrap"></div>
+  </div>
+</div>
+
+<script>
+const f=n=>n>=1e6?(n/1e6).toFixed(1)+'M':n>=1000?(n/1000).toFixed(n>=1e4?0:1)+'K':String(n);
+const pf=(e,M)=>e>=M.hi?'s':e>=M.lo?'a':'w';
+const pc=p=>p==='s'?'pls':p==='a'?'pla':'plw';
+const tc=p=>p==='s'?'ps':p==='a'?'pa':'pw';
+const pl=p=>p==='s'?'ناجح':p==='a'?'عادي':'ضعيف';
+const ec=p=>p==='s'?'var(--grn)':p==='a'?'var(--yel)':'var(--red)';
+let chBuilt=false, R=[], M={}, HM={};
+
+function go(i){
+  document.querySelectorAll('.pane').forEach((p,j)=>p.classList.toggle('on',i===j));
+  document.querySelectorAll('.tab').forEach((t,j)=>t.classList.toggle('on',i===j));
+  if(i===2&&!chBuilt){buildCharts();chBuilt=true;}
+}
+
+async function loadData(){
+  const btn=document.getElementById('rbtn');
+  const sico=document.getElementById('sico');
+  const loader=document.getElementById('loader');
+  const content=document.getElementById('content');
+  const err=document.getElementById('errBox');
+  const step=s=>document.getElementById('ldstep').textContent=s;
+
+  btn.disabled=true;
+  sico.style.animation='spin .6s linear infinite';
+  loader.style.display='flex';
+  content.style.display='none';
+  err.style.display='none';
+  chBuilt=false;
+
+  try {
+    step('يتصل بـ Windsor.ai…');
+    const res = await fetch('/api/data');
+    if(!res.ok) throw new Error(`Server error ${res.status}`);
+    step('يعالج البيانات…');
+    const d = await res.json();
+    if(d.error) throw new Error(d.error);
+    R=d.R; M=d.M; HM=d.HM;
+    step('يبني الداشبورد…');
+    buildAll();
+    loader.style.display='none';
+    content.style.display='block';
+    document.getElementById('fd').textContent=M.fetch;
+  } catch(e){
+    loader.style.display='none';
+    err.style.display='block';
+    err.innerHTML=`<b>⚠️ خطأ في جلب البيانات</b>${e.message}<br><br><small>تأكد من إضافة WINDSOR_API_KEY و WINDSOR_ACCOUNT_ID في Vercel Environment Variables.</small>`;
+  }
+  btn.disabled=false;
+  sico.style.animation='';
+}
+
+function buildAll(){
+  buildKPI(); buildTable(); buildCat(); buildPatterns(); buildRecs(); buildWeek();
+}
+
+function buildKPI(){
+  document.getElementById('kpiGrid').innerHTML=`
+    <div class="kpi cg"><div class="kl">إجمالي المشاهدات</div><div class="kv vg">${f(M.total_views)}</div><div class="ks">آخر 30 ريل</div></div>
+    <div class="kpi cn"><div class="kl">متوسط التفاعل</div><div class="kv vn">${M.avg_eng}%</div><div class="ks">أعلى: <b style="color:var(--grn)">${M.top_eng}%</b></div></div>
+    <div class="kpi cn"><div class="kl">أفضل ريل 🏆</div><div class="kv vn" style="font-size:15px">${M.top_eng}%</div><div class="ks">${M.top_title}</div></div>
+    <div class="kpi cr"><div class="kl">أسوأ ريل ⚠️</div><div class="kv vr" style="font-size:15px">${M.bot_eng}%</div><div class="ks">${M.bot_title}</div></div>
+    <div class="kpi cb"><div class="kl">عدد الريلز</div><div class="kv vb">30</div><div class="ks">محللة بالكامل</div></div>
+    <div class="kpi cy"><div class="kl">إجمالي المشاركات</div><div class="kv vy">${f(M.total_shares)}</div><div class="ks">متوسط ${f(Math.round(M.total_shares/30))}/ريل</div></div>`;
+}
+
+function buildTable(){
+  const s=[...R].sort((a,b)=>b.eng-a.eng);
+  document.getElementById('tbody').innerHTML=s.map((r,i)=>{
+    const p=pf(r.eng,M);
+    const tl=r.url?`<a class="ttx" href="${r.url}" target="_blank" title="${r.title}">${r.title.slice(0,46)}…</a>`
+      :`<span class="ttx" title="${r.title}">${r.title.slice(0,46)}…</span>`;
+    return`<tr class="${tc(p)}"><td class="rk">${String(i+1).padStart(2,'0')}</td><td class="tt">${tl}</td>
+      <td class="dt">${r.date}</td><td class="tn">${f(r.views)}</td><td class="tn">${f(r.likes)}</td>
+      <td class="tn">${r.comments}</td><td class="tn">${f(r.shares)}</td><td class="tn">${f(r.saved)}</td>
+      <td class="tn"><b style="color:${ec(p)}">${r.eng}%</b></td>
+      <td class="tn"><span class="pl ${pc(p)}">${pl(p)}</span></td></tr>`;
+  }).join('');
+}
+
+function buildCat(){
+  const su=R.filter(r=>r.eng>=M.hi),av=R.filter(r=>r.eng>=M.lo&&r.eng<M.hi),wk=R.filter(r=>r.eng<M.lo);
+  const ag=(a,k)=>a.length?a.reduce((s,r)=>s+r[k],0)/a.length:0;
+  const best=su.length?[...su].sort((a,b)=>b.eng-a.eng)[0]:null;
+  const wlow=R.reduce((a,b)=>a.eng<b.eng?a:b);
+  document.getElementById('catRow').innerHTML=`
+    <div class="cc ccs"><div class="ci">🚀</div><div class="ct2" style="color:var(--grn)">ناجح</div><div class="cc2">${su.length} ريلز — تفاعل > ${M.hi}%</div>
+      <div class="cr3"><span>متوسط المشاهدات</span><b>${su.length?f(Math.round(ag(su,'views'))):'-'}</b></div>
+      <div class="cr3"><span>متوسط التفاعل</span><b>${su.length?ag(su,'eng').toFixed(2)+'%':'-'}</b></div>
+      <div class="cr3"><span>أفضل ريل</span><b>${best?best.eng+'%':'-'}</b></div></div>
+    <div class="cc cca"><div class="ci">📊</div><div class="ct2" style="color:var(--yel)">عادي</div><div class="cc2">${av.length} ريلز — ${M.lo}–${M.hi}%</div>
+      <div class="cr3"><span>متوسط المشاهدات</span><b>${av.length?f(Math.round(ag(av,'views'))):'-'}</b></div>
+      <div class="cr3"><span>متوسط التفاعل</span><b>${av.length?ag(av,'eng').toFixed(2)+'%':'-'}</b></div>
+      <div class="cr3"><span>أكثر يوم نشر</span><b>السبت والأحد</b></div></div>
+    <div class="cc ccw"><div class="ci">📉</div><div class="ct2" style="color:var(--red)">ضعيف</div><div class="cc2">${wk.length} ريلز — تفاعل < ${M.lo}%</div>
+      <div class="cr3"><span>الحالة</span><b style="color:${wk.length===0?'var(--grn)':'var(--red)'}">${wk.length===0?'لا يوجد ✓':'موجود'}</b></div>
+      <div class="cr3"><span>أدنى تفاعل</span><b>${wlow.eng}%</b></div>
+      <div class="cr3"><span>التوصية</span><b>حافظ على المستوى</b></div></div>`;
+}
+
+function buildPatterns(){
+  const WD=['الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت','الأحد'];
+  const bh=`${String(M.best_hr).padStart(2,'0')}:00`;
+  const mk=(cl,ic,h)=>`<div class="pi"><div class="pic ${cl}">${ic}</div><div>${h}</div></div>`;
+  document.getElementById('pgood').innerHTML=`<div class="pt">✅ ما اشتغل — قواسم الريلز الناجحة</div>
+    ${mk('pig','🎯',`<b>أفضل يوم: ${WD[M.best_wd]}</b> — متوسط تفاعل ${M.best_wd_e}% وفق بياناتك الفعلية`)}
+    ${mk('pig','⏰',`<b>أفضل وقت: ${bh} ص</b> — تفاعل ${M.best_hr_e}%`)}
+    ${mk('pig','📝',`<b>الكابشن الأقصر أفضل</b> — ناجح: ${M.cap_s} حرف · عادي: ${M.cap_a} حرف`)}
+    ${mk('pig','🔥',`<b>Hook التحذير يضاعف التفاعل 2.4×</b> — "أكبر غلطة"، "قبل ما تحجز"، "لا تقع"`)}
+    ${mk('pig','💾',`<b>الحفظ = نية حجز</b> — الريلز ذات الحفظ العالي هي الأقرب للتحويل`)}`;
+  document.getElementById('pbad').innerHTML=`<div class="pt">❌ قائمة "لا تكررها"</div>
+    ${mk('pir','📅',`<b>تجنب يوم ${WD[M.worst_wd]}</b> — أضعف أيام الأسبوع في بياناتك`)}
+    ${mk('pir','🌙',`<b>تجنب النشر بعد 15:00</b> — تراجع واضح في التفاعل`)}
+    ${mk('pir','📝',`<b>كابشن بدون Hook</b> — "إذا بدك X" أصبح قالباً متوقعاً`)}
+    ${mk('pir','🔁',`<b>تكرار نفس القالب</b> — تنوع بين التحذير والسؤال والقصة`)}
+    ${mk('pir','📞',`<b>CTA مبكر</b> — الواتساب في أول الكابشن = انطباع بياع`)}`;
+}
+
+function buildCharts(){
+  // BAR
+  (()=>{
+    const el=document.getElementById('barSvg');
+    const W=el.parentElement.clientWidth||560,H=220,P={t:8,r:8,b:30,l:44};
+    const iW=W-P.l-P.r,iH=H-P.t-P.b;
+    const mx=Math.max(...R.map(r=>r.views))||1;
+    const bW=Math.max(3,Math.floor(iW/R.length)-2);
+    let bars='',grid='';
+    R.forEach((r,i)=>{
+      const c=pf(r.eng,M)==='s'?'#2ecc8a':pf(r.eng,M)==='a'?'#e8b84a':'#e85555';
+      const bh=Math.max(2,Math.round(iH*r.views/mx));
+      bars+=`<rect x="${P.l+Math.round(i*(iW/R.length))}" y="${P.t+iH-bh}" width="${bW}" height="${bh}" fill="${c}" opacity=".83" rx="2"><title>${r.title.slice(0,38)}\n${f(r.views)} | ${r.eng}%</title></rect>`;
+    });
+    [0,.25,.5,.75,1].forEach(t=>{
+      const y=P.t+iH-Math.round(iH*t);
+      grid+=`<line x1="${P.l}" y1="${y}" x2="${W-P.r}" y2="${y}" stroke="rgba(255,255,255,.05)"/>`;
+      grid+=`<text x="${P.l-4}" y="${y+4}" text-anchor="end" font-size="9" fill="#57554f">${f(Math.round(mx*t))}</text>`;
+    });
+    el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%">${grid}${bars}
+      <rect x="${P.l}" y="${H-11}" width="8" height="8" fill="#2ecc8a" rx="2"/><text x="${P.l+11}" y="${H-2}" font-size="9" fill="#9a9895">ناجح</text>
+      <rect x="${P.l+50}" y="${H-11}" width="8" height="8" fill="#e8b84a" rx="2"/><text x="${P.l+61}" y="${H-2}" font-size="9" fill="#9a9895">عادي</text>
+      <rect x="${P.l+100}" y="${H-11}" width="8" height="8" fill="#e85555" rx="2"/><text x="${P.l+111}" y="${H-2}" font-size="9" fill="#9a9895">ضعيف</text>
+    </svg>`;
+  })();
+  // LINE
+  (()=>{
+    const el=document.getElementById('lineSvg');
+    const rev=[...R].reverse();
+    const W=el.parentElement.clientWidth||560,H=190,P={t:8,r:26,b:22,l:40};
+    const iW=W-P.l-P.r,iH=H-P.t-P.b;
+    const vals=rev.map(r=>r.eng),mx=Math.max(...vals)*1.1||1;
+    const pts=vals.map((v,i)=>[P.l+Math.round(i*iW/(vals.length-1)),P.t+iH-Math.round(v/mx*iH)]);
+    let grid='',dots='';
+    [0,.25,.5,.75,1].forEach(t=>{
+      const y=P.t+iH-Math.round(t*iH);
+      grid+=`<line x1="${P.l}" y1="${y}" x2="${W-P.r}" y2="${y}" stroke="rgba(255,255,255,.05)"/>`;
+      grid+=`<text x="${P.l-4}" y="${y+4}" text-anchor="end" font-size="9" fill="#57554f">${(mx*t).toFixed(1)}%</text>`;
+    });
+    pts.forEach(([x,y],i)=>{
+      const c=pf(rev[i].eng,M)==='s'?'#2ecc8a':pf(rev[i].eng,M)==='a'?'#e8b84a':'#e85555';
+      dots+=`<circle cx="${x}" cy="${y}" r="3.5" fill="${c}" stroke="#13141a" stroke-width="1.5"><title>${rev[i].date} — ${rev[i].eng}%</title></circle>`;
+    });
+    const poly=pts.map(p=>p.join(',')).join(' ');
+    const avgY=P.t+iH-Math.round(M.avg_eng/mx*iH);
+    el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%">
+      <defs><linearGradient id="lg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d4a843"/><stop offset="1" stop-color="#d4a843" stop-opacity="0"/></linearGradient></defs>
+      ${grid}
+      <path d="M${pts[0][0]},${P.t+iH} L${poly} L${pts[pts.length-1][0]},${P.t+iH}Z" fill="url(#lg)" opacity=".16"/>
+      <polyline points="${poly}" fill="none" stroke="#d4a843" stroke-width="2" stroke-linejoin="round"/>
+      <line x1="${P.l}" y1="${avgY}" x2="${W-P.r}" y2="${avgY}" stroke="#d4a843" stroke-dasharray="4,3" stroke-width="1" opacity=".5"/>
+      <text x="${W-P.r+3}" y="${avgY+4}" font-size="9" fill="#d4a843">avg</text>
+      ${dots}</svg>`;
+  })();
+  // DONUT
+  (()=>{
+    const el=document.getElementById('donutSvg');
+    const su=R.filter(r=>r.eng>=M.hi),av=R.filter(r=>r.eng>=M.lo&&r.eng<M.hi),wk=R.filter(r=>r.eng<M.lo);
+    const data=[{n:su.length,c:'#2ecc8a',l:'ناجح'},{n:av.length,c:'#e8b84a',l:'عادي'},{n:wk.length,c:'#e85555',l:'ضعيف'}];
+    const W=200,H=190,cx=100,cy=86,ro=68,ri=42;
+    let a=-Math.PI/2,arcs='';
+    data.forEach(d=>{
+      if(!d.n)return;
+      const sp=2*Math.PI*d.n/30;
+      const [x1,y1]=[cx+ro*Math.cos(a),cy+ro*Math.sin(a)];
+      const [x2,y2]=[cx+ro*Math.cos(a+sp),cy+ro*Math.sin(a+sp)];
+      const [i1x,i1y]=[cx+ri*Math.cos(a),cy+ri*Math.sin(a)];
+      const [i2x,i2y]=[cx+ri*Math.cos(a+sp),cy+ri*Math.sin(a+sp)];
+      const lg=sp>Math.PI?1:0;
+      arcs+=`<path d="M${x1.toFixed(1)},${y1.toFixed(1)} A${ro},${ro} 0 ${lg} 1 ${x2.toFixed(1)},${y2.toFixed(1)} L${i2x.toFixed(1)},${i2y.toFixed(1)} A${ri},${ri} 0 ${lg} 0 ${i1x.toFixed(1)},${i1y.toFixed(1)}Z" fill="${d.c}" opacity=".85"><title>${d.l}:${d.n}</title></path>`;
+      a+=sp;
+    });
+    const leg=data.filter(d=>d.n>0).map((d,i)=>`<rect x="10" y="${H-30+i*16}" width="8" height="8" fill="${d.c}" rx="2"/><text x="22" y="${H-21+i*16}" font-size="10" fill="#9a9895">${d.l} (${d.n})</text>`).join('');
+    el.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%">${arcs}
+      <text x="${cx}" y="${cy-3}" text-anchor="middle" font-size="22" font-weight="700" fill="#edecea">30</text>
+      <text x="${cx}" y="${cy+13}" text-anchor="middle" font-size="10" fill="#9a9895">ريل</text>${leg}</svg>`;
+  })();
+  // HEATMAP
+  (()=>{
+    const WD2=['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
+    const hrs=[];for(let h=0;h<24;h++){if(R.some(r=>r.hr===h))hrs.push(h);}
+    const cc=v=>{if(v==null)return'#1a1b23';const t=Math.min(v/8,1);return`rgb(${Math.round(46+(212-46)*t)},${Math.round(204+(168-204)*t)},${Math.round(138+(67-138)*t)})`};
+    let h=`<div style="overflow-x:auto"><table style="border-collapse:separate;border-spacing:2px"><tr><th style="color:#57554f;font-size:9px;text-align:right;padding:2px 4px;white-space:nowrap">ي/ساعة</th>`;
+    hrs.forEach(hr=>{h+=`<th style="color:#57554f;font-size:9px;text-align:center;min-width:22px">${hr}</th>`});
+    h+='</tr>';
+    for(let w=0;w<7;w++){
+      h+=`<tr><td style="color:#9a9895;font-size:9px;padding:2px 4px;white-space:nowrap">${WD2[w]}</td>`;
+      hrs.forEach(hr=>{const v=HM[`${w}_${hr}`]??null,bg=cc(v),txt=v!=null?v.toFixed(1):'',fc=v!=null&&v>4?'#0b0c0f':'#9a9895';
+        h+=`<td title="${WD2[w]} ${hr}:00" style="background:${bg};border-radius:3px;padding:4px 2px;text-align:center;color:${fc};font-size:8px;min-width:22px">${txt}</td>`;
+      });
+      h+='</tr>';
+    }
+    document.getElementById('hmWrap').innerHTML=h+'</table></div>';
+  })();
+}
+
+function buildRecs(){
+  const WD=['الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت','الأحد'];
+  const bh=`${String(M.best_hr).padStart(2,'0')}:00 ص`;
+  const mk=(cl,pcl,pri,ttl,bdy,icl,imp,ex='')=>`
+    <div class="rc ${cl}"><div class="rp ${pcl}">${pri}</div>
+    <div class="rt">${ttl}</div><div class="rb">${bdy}</div>
+    <div class="ri ${icl}">${imp}</div>${ex?`<div class="re">${ex}</div>`:''}</div>`;
+  document.getElementById('recGrid').innerHTML=
+    mk('rh','rph','🔴 أولوية عالية',`انشر ${WD[M.best_wd]} الساعة ${bh}`,
+      `البيانات تؤكد: ${WD[M.best_wd]} (${M.best_wd_e}%) + ${M.best_hr}:00 (${M.best_hr_e}%) هو الوقت الأمثل.`,
+      'rih','تأثير متوقع: +35-50% وصول','شدّل النشر تلقائياً')+
+    mk('rh','rph','🔴 أولوية عالية','Hook تحذيري أو سؤال في كل ريل',
+      `"أكبر غلطة"، "قبل ما تحجز"، "لا تقع" تضاعف التفاعل 2.4× عن الوصف المباشر.`,
+      'rih','تأثير متوقع: +40-60% تفاعل','بدل "إذا بدك" → "الغلطة الكبرى اللي بتضيع عليك"')+
+    mk('','rpm','🟡 متوسطة',`اقصّر الكابشن إلى ${M.cap_s} حرف`,
+      `ناجح: ${M.cap_s} حرف · عادي: ${M.cap_a} حرف. ضع CTA في السطر الثالث.`,
+      'rim','تأثير متوقع: +20% مشاركات','')+
+    mk('','rpm','🟡 متوسطة','ضاعف محتوى فتحية والوجهات الناشئة',
+      `أعلى تفاعل (${M.top_eng}%) كان لريل فتحية. الجمهور يحب الاكتشاف.`,
+      'rim','تأثير متوقع: +25% مشاهدات','')+
+    mk('rl','rpl','🟢 تحسيني','أضف Series — "أفضل 5 منتجعات لـ..."',
+      `Series من 5 ريلز تبني توقعاً وترفع المتابعين الجدد.`,
+      'ril','تأثير متوقع: +25% متابعين','مثال: أفضل 5 منتجعات عائلية في تركيا 2026')+
+    mk('rl','rpl','🟢 تحسيني','راقب الـ Saved أسبوعياً',
+      `الحفظ = نية حجز. الريلز ذات الحفظ العالي هي الأقرب للتحويل.`,
+      'ril','تأثير متوقع: +15% تحويل','');
+  document.getElementById('stopBox').innerHTML=`
+    <div class="st">🚫 أوقف فوراً</div>
+    <div class="si"><div class="sd"></div>النشر يوم ${WD[M.worst_wd]} — أضعف أيام الأسبوع في بياناتك</div>
+    <div class="si"><div class="sd"></div>النشر بعد 15:00 — تراجع واضح في التفاعل</div>
+    <div class="si"><div class="sd"></div>الكابشن يبدأ بـ "إذا بدك X" — قالب متوقع وممل</div>
+    <div class="si"><div class="sd"></div>رقم الواتساب في أول الكابشن — انطباع بياع قبل إثبات القيمة</div>
+    <div class="si"><div class="sd"></div>أسوأ ريل: "${M.bot_title}" (${M.bot_eng}%) — حلّل لماذا فشل</div>`;
+}
+
+function buildWeek(){
+  const WD=['الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت','الأحد'];
+  const bh=`${String(M.best_hr).padStart(2,'0')}:00 ص`;
+  document.getElementById('goalTxt').textContent=
+    `3 ريلز Hook تحذيري + نشر ${bh} + تنوع الموضوعات. الهدف: رفع متوسط التفاعل من ${M.avg_eng}% إلى ${(M.avg_eng*1.5).toFixed(1)}%.`;
+  const days=[
+    {n:'السبت',best:false,ty:'تيزر',tp:'سؤال يبني فضول للأسبوع',tm:'7:00 ص',cta:'احفظ الريل'},
+    {n:'الأحد',best:M.best_wd===0,ty:'منتجع أطفال',tp:'أكبر غلطة بحجز منتجع الأطفال',tm:bh,cta:'اكتب أطفال'},
+    {n:'الإثنين',best:M.best_wd===1,ty:'وجهة مخفية',tp:'منتجع ما سمعت فيه بتركيا',tm:bh,cta:'شارك مع شخص يستحق'},
+    {n:'الثلاثاء',best:M.best_wd===2,ty:'تحذير',tp:'قبل ما تحجز — الفرق بين منتجع تندم وواحد بتحكي عنه',tm:bh,cta:'اكتب صيف'},
+    {n:'الأربعاء',best:M.best_wd===3,ty:'اكتشاف',tp:'الوجهة التي يسأل عنها الكل — فتحية',tm:bh,cta:'احفظ واشارك'},
+    {n:'الخميس',best:false,ty:'تصويت',tp:'صيفك 2026 — أنطاليا، فتحية، أم بودروم؟',tm:'7:00 ص',cta:'صوّت بالكومنت'},
+    {n:'الجمعة',best:false,ty:'عرض حجز',tp:'للي قرّر يحجز — رتّبلك الرحلة كاملة',tm:'8:00 ص',cta:'واتساب مباشر'},
+  ];
+  document.getElementById('wgrid').innerHTML=days.map(d=>`
+    <div class="dy${d.best?' best':''}">
+      <div class="dn">${d.n}${d.best?' ⭐':''}</div>
+      <div class="dty">${d.ty}</div><div class="dtp">${d.tp}</div>
+      <div class="dtm">⏰ ${d.tm}</div><div class="dcta">${d.cta}</div>
+    </div>`).join('');
+  const caps=[
+    {d:'الأحد',t:`أكبر غلطة بتعملها عيلتك هالصيف ❌\n\nالكل بيحجز "لاند أوف ليجندز" بآخر لحظة ويدفع أكتر بـ 40٪.\nالأذكياء حجزوا من 3 شهور بأقل سعر.\n\nNickelodeon Hotels ✓\n→ عروض يومية للأطفال\n→ منطقة كبار كاملة\n→ كل وجبة شاملة\n\nاكتب "أطفال" بالكومنت وبوصّلك التفاصيل 📩\n#mybedroom_travel #منتجعات_تركيا #صيف2026`},
+    {d:'الثلاثاء',t:`قبل ما تحجز أنطاليا.. اقرأ هاد أولاً 🛑\n\nفي منتجعات بتعطيك إقامة وبس.\nوفي منتجعات بتعطيك تجربة ما بتنساها.\n\nالفرق مو السعر — الفرق في الاختيار.\n\nاكتب "صيف" بالكومنت 🌊\n+905011361141 واتساب للحجز`},
+    {d:'الأربعاء',t:`الوجهة التركية اللي الكل عم يسأل عنها.. بس ما أحد بيحكي 🤫\n\nفتحية — مو بس طبيعة وبحر.\n\n✓ مياه فيروزية ما في مثلها\n✓ هدوء بعيد عن الزحمة\n✓ مناسب للعائلات والأزواج\n\nاكتب "فتحية" وبوصّلك كل التفاصيل 📩`},
+  ];
+  document.getElementById('capsWrap').innerHTML=caps.map((c,i)=>`
+    <div class="cbx"><div class="cday">${c.d}</div>
+    <div class="ctxt" id="cp${i}">${c.t}</div>
+    <button class="cpbtn" onclick="cp(${i})">📋 نسخ الكابشن</button></div>`).join('');
+}
+
+function cp(i){
+  const el=document.getElementById('cp'+i);
+  if(navigator.clipboard) navigator.clipboard.writeText(el.textContent).then(()=>{
+    const b=el.nextElementSibling,o=b.textContent;
+    b.textContent='✅ تم النسخ!';setTimeout(()=>b.textContent=o,2000);
+  });
+}
+
+// Auto-load on open
+window.addEventListener('load', loadData);
+</script>
+</body>
+</html>
